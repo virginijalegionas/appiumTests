@@ -10,8 +10,11 @@ public class ProductPage : BaseOperations
     public List<string> GetProductColors()
     {
         List<AppiumElement> colorObject = GetElements(By.XPath("//android.view.ViewGroup[contains(@content-desc, 'circle')]"), 5);
-        List<string> colors = colorObject.Select(x => x.GetAttribute("content-desc")).ToList();
-        return colors.Select(x => x.Substring(0, x.Length - 7)).ToList();
+        List<string> colors = colorObject
+            .Select(x => x.GetAttribute("content-desc"))
+            .Select(x => x.Substring(0, x.Length - 7))
+            .ToList();
+        return colors;
     }
 
     public double GetProductPrice()
@@ -36,17 +39,19 @@ public class ProductPage : BaseOperations
 
     public void IncreaseProdutAmount(int number)
     {
+        AppiumElement element = GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter plus button\"]"), 5);
         for (int i = 1; i < number; i++)
         {
-            GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter plus button\"]"), 5).Click();
+            element.Click();
         }
     }
 
     public void ReduceProdutAmount(int number)
     {
+        AppiumElement element = GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter minus button\"]"), 5);
         for (int i = 1; i < number; i++)
         {
-            GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter minus button\"]"), 5).Click();
+            element.Click();
         }
     }
 

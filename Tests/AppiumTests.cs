@@ -51,7 +51,7 @@ public class AppiumTests : TestBase
         Assert.AreEqual(shopElement.Name, productName);
         Assert.AreEqual(shopElement.Price, productPrice);
         CollectionAssert.AreEquivalent(expectedColors, productColors);
-        Assert.IsTrue(productDescription.Contains("laptop and tablet protection"), "Expected text: laptop and tablet protection - to be in the product description");
+        StringAssert.Contains(productDescription, "laptop and tablet protection");
 
         //set a review - not much options to validate what value was set. su just setting it
         productPage.SubmitProductReview("4");
