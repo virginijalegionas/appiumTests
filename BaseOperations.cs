@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
-using OpenQA.Selenium.Interactions;
+
 
 public class BaseOperations
 {
@@ -67,8 +67,6 @@ public class BaseOperations
         if (IsElementExists(by, waitSeconds))
         {
             element = driver.FindElement(by);
-            /* ((IJavaScriptExecutor)driver)
-        .ExecuteScript("arguments[0].scrollIntoView(true);", element); */
         }
         return element;
     }
@@ -99,41 +97,7 @@ public class BaseOperations
         }
         return false;
     }
-
-    public void ScrollDown()
-    {
-        var size = driver.Manage().Window.Size;
-        int startX = size.Width / 2;
-        int startY = (int)(size.Height * 0.8);
-        int endY = (int)(size.Height * 0.2);
-
-        Actions actions = new Actions(driver);
-        actions.MoveToLocation(startX, startY)
-               .ClickAndHold() // Press down at the start point
-               .MoveByOffset(0, endY - startY) // Move vertically to the end point
-               .Release() // Release the press
-               .Perform();
-    }
-
-    public void ScrollToThePageTop()
-    {
-        string topElementXpath = "//android.widget.TextView[@text=\"Products\"]";
-        while (!IsElementExists(By.XPath(topElementXpath), 1))
-        {
-            var size = driver.Manage().Window.Size;
-            int startX = size.Width / 2;
-            int startY = (int)(size.Height * 0.2);
-            int endY = (int)(size.Height * 0.8);
-
-            Actions actions = new Actions(driver);
-            actions.MoveToLocation(startX, startY)
-                   .ClickAndHold()
-                   .MoveByOffset(0, endY - startY)
-                   .Release()
-                   .Perform();
-        }
-    }
-
+    
     /* public bool IsElementDisabled(By by)
     {
         string attribute = GetElement(by, 5).GetAttribute("disabled");

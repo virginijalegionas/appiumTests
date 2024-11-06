@@ -31,7 +31,6 @@ namespace appiumTests
         }
 
         [TestInitialize]
-
         public void AutoStartDriver()
         {
             StartDriver();
