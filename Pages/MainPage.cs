@@ -9,12 +9,18 @@ public class MainPage : BaseOperations
     {
     }
 
+    public void OpenProduct(string productName)
+    {
+        string xpath = $"//android.widget.TextView[@text='{productName}']";
+        GetElement(By.XPath(xpath), 5).Click();
+    }
+
     public List<ShopElement> GetAllProducts()
     {
         List<ShopElement> productsList = new List<ShopElement>();
         do
         {
-            string productXpath = "//android.widget.TextView[@content-desc=\"store item price\"]//parent::android.view.ViewGroup[@content-desc=\"store item\"]";
+            string productXpath = "//parent::android.view.ViewGroup[@content-desc=\"store item\"]";
             List<AppiumElement> products = GetElements(By.XPath(productXpath), 5);
             foreach (AppiumElement product in products)
             {

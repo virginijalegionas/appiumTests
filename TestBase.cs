@@ -24,6 +24,7 @@ namespace appiumTests
             driverOptions.AddAdditionalAppiumOption("appActivity", ".MainActivity");
             driverOptions.AddAdditionalAppiumOption("udid", "28f136550704");
             driverOptions.AddAdditionalAppiumOption("shouldTerminateApp", true);
+            driverOptions.AddAdditionalAppiumOption("allowInvisibleElements", true);
             // NoReset assumes the app com.google.android is preinstalled on the emulator
             driverOptions.AddAdditionalAppiumOption("noReset", true);
             driver = new AndroidDriver(serverUri, driverOptions, TimeSpan.FromSeconds(180));

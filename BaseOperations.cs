@@ -1,6 +1,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
+using OpenQA.Selenium.Interactions;
 
 
 public class BaseOperations
@@ -97,10 +98,40 @@ public class BaseOperations
         }
         return false;
     }
-    
-    /* public bool IsElementDisabled(By by)
+
+    /* public void ScrollDown()
     {
-        string attribute = GetElement(by, 5).GetAttribute("disabled");
-        return attribute == "true";
+        var size = driver.Manage().Window.Size;
+        int startX = size.Width / 2;
+        int startY = (int)(size.Height * 0.8); 
+        int endY = (int)(size.Height * 0.2); 
+        
+        Actions actions = new Actions(driver);
+        actions.MoveToLocation(startX, startY) // Move to the starting point
+               .ClickAndHold() // Press down at the start point
+               .MoveByOffset(0, endY - startY) // Move vertically to the end point
+               .Release() // Release the press
+               .Perform();
+    }
+
+    private void ScrollUp()
+    {
+        var size = driver.Manage().Window.Size;
+        int startX = size.Width / 2;
+        int startY = (int)(size.Height * 0.2); 
+        int endY = (int)(size.Height * 0.8);
+        
+        Actions actions = new Actions(driver);
+        actions.MoveToLocation(startX, startY) // Move to the starting point
+               .ClickAndHold() // Press down at the start point
+               .MoveByOffset(0, endY - startY) // Move vertically to the end point
+               .Release() // Release the press
+               .Perform();
     } */
+
+    public bool IsElementEnabled(By by)
+    {
+        string attribute = GetElement(by, 5).GetAttribute("enabled");
+        return attribute == "true";
+    }
 }
