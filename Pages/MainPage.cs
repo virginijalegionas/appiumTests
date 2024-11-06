@@ -2,6 +2,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Interactions;
+using System.Drawing;
 
 public class MainPage : BaseOperations
 {
@@ -9,12 +10,18 @@ public class MainPage : BaseOperations
     {
     }
 
+    public void OpenProduct(string productName)
+    {
+        string xpath = $"//android.widget.TextView[@text='{productName}']";
+        GetElement(By.XPath(xpath), 5).Click();
+    }
+
     public List<ShopElement> GetAllProducts()
     {
         List<ShopElement> productsList = new List<ShopElement>();
         do
         {
-            string productXpath = "//android.widget.TextView[@content-desc=\"store item price\"]//parent::android.view.ViewGroup[@content-desc=\"store item\"]";
+            string productXpath = "//parent::android.view.ViewGroup[@content-desc=\"store item\"]";
             List<AppiumElement> products = GetElements(By.XPath(productXpath), 5);
             foreach (AppiumElement product in products)
             {
@@ -77,7 +84,7 @@ public class MainPage : BaseOperations
         if (IsElementExists(By.XPath(bottomXpath), 1))
             return false;
 
-        var size = driver.Manage().Window.Size;
+        Size size = driver.Manage().Window.Size;
         int startX = size.Width / 2;
         int startY = (int)(size.Height * 0.8);
         int endY = (int)(size.Height * 0.2);
@@ -96,7 +103,7 @@ public class MainPage : BaseOperations
         string topElementXpath = "//android.widget.TextView[@text=\"Products\"]";
         while (!IsElementExists(By.XPath(topElementXpath), 1))
         {
-            var size = driver.Manage().Window.Size;
+            Size size = driver.Manage().Window.Size;
             int startX = size.Width / 2;
             int startY = (int)(size.Height * 0.2);
             int endY = (int)(size.Height * 0.8);
