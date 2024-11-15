@@ -17,7 +17,6 @@ namespace appiumTests
                 PlatformName = "Android",
                 DeviceName = "Mi A1",
                 PlatformVersion = "9",
-
             };
 
             driverOptions.AddAdditionalAppiumOption("appPackage", "com.saucelabs.mydemoapp.rn");
@@ -40,6 +39,15 @@ namespace appiumTests
         [TestCleanup]
         public void CleanUp()
         {
+            //Empty Basket
+            Basket basket = new Basket(driver);
+            basket.OpenBasket();
+            basket.EmptyBasket();
+            //Log out from app
+            LeftPanel leftPanel = new LeftPanel(driver);
+            leftPanel.OpenLogout();
+            Logout logout = new Logout(driver);
+            logout.LogoutUser();
             driver.Quit();
         }
     }
