@@ -1,32 +1,51 @@
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium.Android;
 
-public class LeftPanel
+public class LeftPanel : BaseOperations
 {
-    private BaseOperations baseOperations;
-
-    public LeftPanel(BaseOperations baseOperations)
+    public LeftPanel(AndroidDriver driver) : base(driver)
     {
-        this.baseOperations = baseOperations;
     }
 
     public void OpenLeftMenu()
     {
         string xpath = "//android.view.ViewGroup[@content-desc=\"open menu\"]/android.widget.ImageView";
-        if (!IsLeftMenuExpanded())
-            baseOperations.GetElement(By.XPath(xpath), 5).Click();
-    }
-
-    public bool IsLeftMenuExpanded()
-    {
-        //will be checking if catalog xpath is showing up, that means the whole left menu is expanded
-        string xpath = "//android.view.ViewGroup[@content-desc=\"menu item catalog\"]";
-        return baseOperations.IsElementExists(By.XPath(xpath), 1);
+        GetElement(By.XPath(xpath), 5).Click();
     }
 
     public void ClickCatalog()
     {
         string xpath = "//android.view.ViewGroup[@content-desc=\"menu item catalog\"]";
-        if (!IsLeftMenuExpanded())
-            baseOperations.GetElement(By.XPath(xpath), 5).Click();
+        GetElement(By.XPath(xpath), 5).Click();
+    }
+
+    public void OpenCatalog()
+    {
+        OpenLeftMenu();
+        ClickCatalog();
+    }
+
+    public void ClickLogIn()
+    {
+        string xpath = "//android.view.ViewGroup[@content-desc=\"menu item log in\"]";
+        GetElement(By.XPath(xpath), 5).Click();
+    }
+    
+    public void ClickLogOut()
+    {
+        string xpath = "//android.view.ViewGroup[@content-desc=\"menu item log out\"]";
+        GetElement(By.XPath(xpath), 5).Click();
+    }
+
+    public void OpenLogin()
+    {
+        OpenLeftMenu();
+        ClickLogIn();
+    }
+
+    public void OpenLogout()
+    {
+        OpenLeftMenu();
+        ClickLogOut();
     }
 }

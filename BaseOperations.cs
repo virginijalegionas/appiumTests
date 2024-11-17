@@ -1,66 +1,38 @@
+using System.Drawing;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Interactions;
 
-
 public class BaseOperations
 {
     protected readonly AndroidDriver driver;
-    public LeftPanel LeftPanel { get; private set; }
-
 
     public BaseOperations(AndroidDriver driver)
     {
         this.driver = driver;
-        LeftPanel = new LeftPanel(this);
-
     }
 
-    /*    public void GoToHomePage()
-       {
-           string xpath = "//header/a/img";
-           GetElement(By.XPath(xpath), 5).Click();
-       } */
+    public void InputTextField(By by, string inputText)
+    {
+        IWebElement element = GetElement(by, 5);
+        element.Clear();
+        element.SendKeys(inputText);
+    }
 
-    /*  public void InputTextField(By by, string inputText)
-     {
-         IWebElement element = GetElement(by, 5);
-         element.Clear();
-         element.SendKeys(inputText);
-     }
-  */
+    public int GetBasketItemNumber()
+    {
+        string basketXpath = "//android.view.ViewGroup[@content-desc=\"cart badge\"]/android.widget.TextView";
+        if (!IsElementExists(By.XPath(basketXpath), 3))
+            return 0;
 
+        return int.Parse(GetElement(By.XPath(basketXpath), 5).Text);
+    }
 
-    /*   public void ClickOnRadio(By by)
-      {
-          Actions act = new Actions(driver);
-          IWebElement element = GetElement(by, 5);
-          act.MoveToElement(element).Click().Build().Perform();
-      } */
-
-    /*    public void ClickOnCheckBox(By by)
-       {
-           Actions act = new Actions(driver);
-           IWebElement element = GetElement(by, 5);
-           act.MoveToElement(element).Click().Build().Perform();
-       } */
-
-    /*  public void SelectDateFromPicker(By by, DateOnly date)
-     {
-         GetElement(by, 5).Click();
-         SelectElement yearDropDown = new SelectElement(driver.FindElement(By.ClassName("react-datepicker__year-select")));
-         yearDropDown.SelectByValue(date.Year.ToString());
-
-         SelectElement monthDropDown = new SelectElement(driver.FindElement(By.ClassName("react-datepicker__month-select")));
-         //Month Value and text are different need to get Value from the Text
-         string monthXpath = $"//option[contains(text(),'{date.ToString("MMMM")}')]";
-         string monthValue = GetElement(By.XPath(monthXpath), 5).GetAttribute("value");
-         monthDropDown.SelectByValue(monthValue);
-
-         string dayXpath = $"//div[@class='react-datepicker__week']//div[text()='{date.Day}' and contains(@aria-label,'{date.ToString("MMMM")}')]";
-         GetElement(By.XPath(dayXpath), 5).Click();
-     } */
+    public void OpenBasket()
+    {
+        GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"cart badge\"]/android.widget.ImageView"), 5).Click();
+    }
 
     public AppiumElement GetElement(By by, int waitSeconds)
     {
@@ -99,13 +71,49 @@ public class BaseOperations
         return false;
     }
 
-    /* public void ScrollDown()
+    public bool IsElementEnabled(By by)
+    {
+        string attribute = GetElement(by, 5).GetAttribute("enabled");
+        return attribute == "true";
+    }
+
+    public bool ScrollDownProductList()
+    {
+        string bottomXpath = "//android.widget.TextView[@text=\"© 2024 Sauce Labs. All Rights Reserved. Terms of Service | Privacy Policy.\"]";
+        if (IsElementExists(By.XPath(bottomXpath), 1))
+            return false;
+
+        Size size = driver.Manage().Window.Size;
+        int startX = size.Width / 2;
+        int startY = (int)(size.Height * 0.8);
+        int endY = (int)(size.Height * 0.2);
+
+        Actions actions = new Actions(driver);
+        actions.MoveToLocation(startX, startY)
+               .ClickAndHold() // Press down at the start point
+               .MoveByOffset(0, endY - startY) // Move vertically to the end point
+               .Release() // Release the press
+               .Perform();
+        return true;
+    }
+
+    public string GetPageHeader()
+    {
+        /*OpenQA.Selenium.StaleElementReferenceException: The element 
+        'By.xpath: //android.view.ViewGroup[@content-desc="container header"]/child::android.widget.TextView' 
+        is not linked to the same object in DOM anymore; For documentation on this error, 
+        please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#stale-element-reference-exception*/
+        Common.Wait(1);
+        return GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"container header\"]/child::android.widget.TextView"), 5).Text;
+    }
+
+    public void ScrollDown()
     {
         var size = driver.Manage().Window.Size;
         int startX = size.Width / 2;
-        int startY = (int)(size.Height * 0.8); 
-        int endY = (int)(size.Height * 0.2); 
-        
+        int startY = (int)(size.Height * 0.7);
+        int endY = (int)(size.Height * 0.3);
+
         Actions actions = new Actions(driver);
         actions.MoveToLocation(startX, startY) // Move to the starting point
                .ClickAndHold() // Press down at the start point
@@ -114,24 +122,18 @@ public class BaseOperations
                .Perform();
     }
 
-    private void ScrollUp()
+    public void ScrollUp()
     {
         var size = driver.Manage().Window.Size;
         int startX = size.Width / 2;
-        int startY = (int)(size.Height * 0.2); 
-        int endY = (int)(size.Height * 0.8);
-        
+        int startY = (int)(size.Height * 0.2);
+        int endY = (int)(size.Height * 0.7);
+
         Actions actions = new Actions(driver);
         actions.MoveToLocation(startX, startY) // Move to the starting point
                .ClickAndHold() // Press down at the start point
                .MoveByOffset(0, endY - startY) // Move vertically to the end point
                .Release() // Release the press
                .Perform();
-    } */
-
-    public bool IsElementEnabled(By by)
-    {
-        string attribute = GetElement(by, 5).GetAttribute("enabled");
-        return attribute == "true";
     }
 }

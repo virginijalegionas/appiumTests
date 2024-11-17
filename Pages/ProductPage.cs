@@ -37,21 +37,31 @@ public class ProductPage : BaseOperations
         GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"Add To Cart button\"]"), 5).Click();
     }
 
-    public void IncreaseProdutAmount(int number)
+    public void IncreaseProductAmountToNumber(int number)
     {
-        AppiumElement element = GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter plus button\"]"), 5);
-        for (int i = 1; i < number; i++)
+        int currentAmount = int.Parse(GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter amount\"]//android.widget.TextView"), 5).Text);
+        int clickTimes = number - currentAmount;
+        if (clickTimes > 0)
         {
-            element.Click();
+            AppiumElement element = GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter plus button\"]"), 5);
+            for (int i = 1; i <= clickTimes; i++)
+            {
+                element.Click();
+            }
         }
     }
 
-    public void ReduceProdutAmount(int number)
+    public void ReduceProductAmountToNumber(int number)
     {
-        AppiumElement element = GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter minus button\"]"), 5);
-        for (int i = 1; i < number; i++)
+        int currentAmount = int.Parse(GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter amount\"]//android.widget.TextView"), 5).Text);
+        int clickTimes = currentAmount - number;
+        if (clickTimes > 0)
         {
-            element.Click();
+            AppiumElement element = GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"counter minus button\"]"), 5);
+            for (int i = 1; i <= clickTimes; i++)
+            {
+                element.Click();
+            }
         }
     }
 
@@ -70,5 +80,18 @@ public class ProductPage : BaseOperations
     public bool IsAddToCartEnabled()
     {
         return IsElementEnabled(By.XPath("//android.view.ViewGroup[@content-desc=\"Add To Cart button\"]"));
+    }
+
+    public void SelectProductColor(string color)
+    {
+        string xpath = $"//android.view.ViewGroup[contains(@content-desc, \"{color}\")]";
+        GetElement(By.XPath(xpath), 5).Click();
+    }
+
+    public void AddProductToBasket(string color = "black", int amount = 1)
+    {
+        SelectProductColor(color);
+        IncreaseProductAmountToNumber(amount);
+        ClickAddToCart();
     }
 }

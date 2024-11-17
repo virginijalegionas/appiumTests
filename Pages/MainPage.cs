@@ -78,26 +78,6 @@ public class MainPage : BaseOperations
         GetElement(By.XPath(xpath), 5).Click();
     }
 
-    public bool ScrollDownProductList()
-    {
-        string bottomXpath = "//android.widget.TextView[@text=\"© 2024 Sauce Labs. All Rights Reserved. Terms of Service | Privacy Policy.\"]";
-        if (IsElementExists(By.XPath(bottomXpath), 1))
-            return false;
-
-        Size size = driver.Manage().Window.Size;
-        int startX = size.Width / 2;
-        int startY = (int)(size.Height * 0.8);
-        int endY = (int)(size.Height * 0.2);
-
-        Actions actions = new Actions(driver);
-        actions.MoveToLocation(startX, startY)
-               .ClickAndHold() // Press down at the start point
-               .MoveByOffset(0, endY - startY) // Move vertically to the end point
-               .Release() // Release the press
-               .Perform();
-        return true;
-    }
-
     public void ScrollToProductListTop()
     {
         string topElementXpath = "//android.widget.TextView[@text=\"Products\"]";
