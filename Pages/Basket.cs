@@ -100,10 +100,7 @@ public class Basket : BaseOperations
                 Color = productColor.Substring(0, productColor.Length - 7),
                 Amount = int.Parse(productAmount),
             };
-            if (!basketProducts.Exists(x => x.Name == productName))
-            {
-                basketProducts.Add(productValues);
-            }
+            basketProducts.Add(productValues);
         }
         return basketProducts;
     }
