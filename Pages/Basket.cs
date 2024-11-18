@@ -14,6 +14,7 @@ public class Basket : BaseOperations
     {
         string xpath = "//android.view.ViewGroup[@content-desc=\"Proceed To Checkout button\"]";
         GetElement(By.XPath(xpath), 5).Click();
+        Common.Wait(1);
     }
 
     public ShopElementInBasket GetProductValues(string productName)

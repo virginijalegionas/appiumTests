@@ -11,6 +11,7 @@ public class Checkout : BaseOperations
     {
         string xpath = "//android.widget.TextView[@text=\"To Payment\"]";
         GetElement(By.XPath(xpath), 5).Click();
+        Common.Wait(1);
     }
 
     public void InputFullName(string fullName)
@@ -53,41 +54,5 @@ public class Checkout : BaseOperations
     {
         string xpath = "//android.widget.EditText[@content-desc=\"Country* input field\"]";
         InputTextField(By.XPath(xpath), country);
-    }
-
-    public void InputCardNumber(string cardNumber)
-    {
-        string xpath = "//android.widget.EditText[@content-desc=\"Card Number* input field\"]";
-        InputTextField(By.XPath(xpath), cardNumber);
-    }
-
-    public void InputExpirationDate(string expDate)
-    {
-        string xpath = "//android.widget.EditText[@content-desc=\"Expiration Date* input field\"]";
-        InputTextField(By.XPath(xpath), expDate);
-    }
-
-    public void InputSecurityCode(string securityCode)
-    {
-        string xpath = "//android.widget.EditText[@content-desc=\"Security Code* input field\"]";
-        InputTextField(By.XPath(xpath), securityCode);
-    }
-
-    public void ClickReviewOrder()
-    {
-        string xpath = "//android.view.ViewGroup[@content-desc=\"Review Order button\"]";
-        GetElement(By.XPath(xpath), 5).Click();
-    }
-
-    public void ClickPlaceOrder()
-    {
-        string xpath = "//android.view.ViewGroup[@content-desc=\"Place Order button\"]";
-        GetElement(By.XPath(xpath), 5).Click();
-    }
-
-    public void ClickContinueShopping()
-    {
-        string xpath = "//android.view.ViewGroup[@content-desc=\"Continue Shopping button\"]";
-        GetElement(By.XPath(xpath), 5).Click();
     }
 }
