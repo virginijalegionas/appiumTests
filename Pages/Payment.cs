@@ -32,10 +32,10 @@ public class Payment : BaseOperations
         InputTextField(By.XPath(xpath), securityCode);
     }
 
-    public void MyBillingAddressIsTheSame(bool checkedUnchecked)
+    public void SetCheckboxMyBillingAddressIsTheSame(bool enabled)
     {
         string needToClickXpath = "//android.view.ViewGroup[@content-desc='checkbox for My billing address is the same as my shipping address.']//android.widget.ImageView";
-        if (IsElementExists(By.XPath(needToClickXpath), 2) == checkedUnchecked)
+        if (IsElementExists(By.XPath(needToClickXpath), 2) == enabled)
         {
             GetElement(By.XPath("//android.view.ViewGroup[@content-desc='checkbox for My billing address is the same as my shipping address.']/android.view.ViewGroup"), 5).Click();
         }

@@ -182,7 +182,7 @@ public class AppiumTests : TestBase
     }
 
     [TestMethod]
-    public void ByProduct_WithLogin()
+    public void BuyProduct_WithLogin_Pass()
     {
         //login into app
         LeftPanel leftPanel = new LeftPanel(driver);
@@ -227,7 +227,7 @@ public class AppiumTests : TestBase
         payment.InputExpirationDate(expirationDate);
         string securityCode = "556";
         payment.InputSecurityCode(securityCode);
-        payment.MyBillingAddressIsTheSame(true);
+        payment.SetCheckboxMyBillingAddressIsTheSame(true);
         payment.ClickReviewOrder();
         //Review Order: products info
         ReviewOrder reviewOrder = new ReviewOrder(driver);
