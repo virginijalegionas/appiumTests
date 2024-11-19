@@ -22,6 +22,7 @@ public class Login : BaseOperations
     public void ClickLogin()
     {
         GetElement(By.XPath("//android.view.ViewGroup[@content-desc=\"Login button\"]"), 5).Click();
+        Common.Wait(1);
     }
 
     public void LoginUser(string userName, string password)
