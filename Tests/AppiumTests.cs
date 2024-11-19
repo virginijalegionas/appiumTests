@@ -1,3 +1,5 @@
+using System.Net.Mail;
+
 namespace appiumTests;
 
 [TestClass]
@@ -177,5 +179,89 @@ public class AppiumTests : TestBase
                 StringAssert.Contains("Products", mainPage.GetPageHeader()); //products page opened
             }
         }
-    }    
+    }
+
+    [TestMethod]
+    public void BuyProduct_WithLogin_Pass()
+    {
+        //login into app
+        LeftPanel leftPanel = new LeftPanel(driver);
+        leftPanel.OpenLogin();
+        Login login = new Login(driver);
+        login.LoginUser("bob@example.com", "10203040"); //later will make runsettings
+        //Add product to basket
+        MainPage mainPage = new MainPage(driver);
+        mainPage.SortByNameAscending();
+        mainPage.OpenProduct(shopElement.Name);
+        ProductPage productPage = new ProductPage(driver);
+        string productColor = "blue";
+        int productAmount = 3;
+        productPage.AddProductToBasket(productColor, productAmount);
+        productPage.OpenBasket();
+        //proceed to checkout
+        Basket basket = new Basket(driver);
+        basket.ClickProceedToCheckout();
+        //Adding address info
+        Checkout checkout = new Checkout(driver);
+        string fullName = $"Full Name {Common.GenerateRandom()}";
+        string addressLine1 = $"adl1 {Common.GenerateRandom()}";
+        string addressLine2 = $"adl2 {Common.GenerateRandom()}";
+        string city = $"ci {Common.GenerateRandom()}";
+        string stateRegion = $"str {Common.GenerateRandom()}";
+        string zipCode = $"zp {Common.GenerateRandom()}";
+        string country = $"co {Common.GenerateRandom()}";
+        checkout.InputFullName(fullName);
+        checkout.InputAddressLine1(addressLine1);
+        checkout.InputAddressLine2(addressLine2);
+        checkout.InputCity(city);
+        checkout.InputStateRegion(stateRegion);
+        checkout.InputZipCode(zipCode);
+        checkout.InputCountry(country);
+        checkout.ClickToPayment();
+        //Adding payment information
+        Payment payment = new Payment(driver);
+        payment.InputFullName(fullName);
+        string cardNumber = "1234 4321 7896 256";
+        payment.InputCardNumber(cardNumber);
+        DateOnly expirationDate = new DateOnly(2029, 02, 09);
+        payment.InputExpirationDate(expirationDate);
+        string securityCode = "556";
+        payment.InputSecurityCode(securityCode);
+        payment.SetCheckboxMyBillingAddressIsTheSame(true);
+        payment.ClickReviewOrder();
+        //Review Order: products info
+        ReviewOrder reviewOrder = new ReviewOrder(driver);
+        List<ShopElementInBasket> reviewProducts = reviewOrder.GetProductsValues();
+        Assert.AreEqual(1, reviewProducts.Count);
+        Assert.AreEqual(shopElement.Name, reviewProducts[0].Name);
+        Assert.AreEqual(shopElement.Price, reviewProducts[0].Price);
+        Assert.AreEqual(productColor, reviewProducts[0].Color);
+        //Delivery info
+        Dictionary<string, string> reviewDeliveryAddress = reviewOrder.GetDeliveryAddressInfo();
+        Assert.AreEqual(fullName, reviewDeliveryAddress["Full Name"]);
+        Assert.AreEqual($"{addressLine1}, {addressLine2}", reviewDeliveryAddress["Address Lines"]);
+        Assert.AreEqual($"{city}, {stateRegion}", reviewDeliveryAddress["City, State"]);
+        Assert.AreEqual(country, reviewDeliveryAddress["Country"]);
+        Assert.AreEqual(zipCode, reviewDeliveryAddress["Zip Code"]);
+        //Payment info
+        Dictionary<string, string> reviewPaymentMethod = reviewOrder.GetPaymentMethodInfo();
+        Assert.AreEqual(fullName, reviewPaymentMethod["Full Name"]);
+        Assert.AreEqual(cardNumber, reviewPaymentMethod["Card Number"]);
+        Assert.AreEqual(expirationDate.ToString("MM/yy"), reviewPaymentMethod["Expiration Date"]);
+        //Billing address
+        Dictionary<string, string> reviewBillingAddress = reviewOrder.GetBilingAddressInfo();
+        Assert.AreEqual(0, reviewBillingAddress.Count);
+        //Shipping costs
+        double reviewShippingCosts = reviewOrder.GetShippingCosts();
+        Assert.AreEqual(5.99, reviewShippingCosts);
+        //totals
+        int totalAmount = reviewOrder.GetTotalItems();
+        Assert.AreEqual(productAmount, totalAmount);
+        double totalPrice = reviewOrder.GetTotalPrice();
+        Assert.AreEqual(shopElement.Price * productAmount + reviewShippingCosts, totalPrice);
+        reviewOrder.ClickPlaceOrder();
+        reviewOrder.ClickContinueShopping();
+        string pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains(pageHeader, "Products");
+    }
 }
