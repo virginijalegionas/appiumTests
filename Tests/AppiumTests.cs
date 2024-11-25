@@ -377,4 +377,127 @@ public class AppiumTests : TestBase
         string pageHeader = mainPage.GetPageHeader();
         StringAssert.Contains(pageHeader, "Products");
     }
+
+    [TestMethod]
+    public void BuyProduct_MandatoryFields()
+    {
+        //login into app
+        LeftPanel leftPanel = new LeftPanel(driver);
+        leftPanel.OpenLogin();
+        Login login = new Login(driver);
+        login.LoginUser("bob@example.com", "10203040"); //later will make runsettings
+        //Add product to basket
+        MainPage mainPage = new MainPage(driver);
+        mainPage.SortByNameAscending();
+        mainPage.OpenProduct(shopElement.Name);
+        ProductPage productPage = new ProductPage(driver);        
+        productPage.ClickAddToCart();
+        productPage.OpenBasket();
+        //proceed to checkout
+        Basket basket = new Basket(driver);
+        basket.ClickProceedToCheckout();
+        //Adding address info
+        Checkout checkout = new Checkout(driver);
+        checkout.ClickToPayment(); 
+        //Validate that mandatory fields contains error messages
+        string fullNameErrorMessage = checkout.GetErrorMessageForField("Full Name");
+        string addressLine1ErrorMessage = checkout.GetErrorMessageForField("Address Line 1");
+        string addressLine2ErrorMessage = checkout.GetErrorMessageForField("Address Line 2");
+        string cityErrorMessage = checkout.GetErrorMessageForField("City");
+        string stateRegionErrorMessage = checkout.GetErrorMessageForField("State/Region");
+        string zipCodeErrorMessage = checkout.GetErrorMessageForField("Zip Code");
+        string countryErrorMessage = checkout.GetErrorMessageForField("Country");
+        StringAssert.Contains("Please provide your full name.", fullNameErrorMessage);
+        StringAssert.Contains("Please provide your address.", addressLine1ErrorMessage);
+        StringAssert.Contains("", addressLine2ErrorMessage);
+        StringAssert.Contains("Please provide your city.", cityErrorMessage);
+        StringAssert.Contains("", stateRegionErrorMessage);
+        StringAssert.Contains("Please provide your zip code.", zipCodeErrorMessage);
+        StringAssert.Contains("Please provide your country.", countryErrorMessage);
+        //enter mandatory fields to procced
+        string fullName = $"Full Name {Common.GenerateRandom()}";
+        string addressLine1 = $"adl1 {Common.GenerateRandom()}";        
+        string city = $"ci {Common.GenerateRandom()}";        
+        string zipCode = $"zp {Common.GenerateRandom()}";
+        string country = $"co {Common.GenerateRandom()}";
+        checkout.InputFullName(fullName);
+        checkout.InputAddressLine1(addressLine1);        
+        checkout.InputCity(city);        
+        checkout.InputZipCode(zipCode);
+        checkout.InputCountry(country);
+        checkout.ClickToPayment();         
+        //validate when payment info isn't entered
+        Payment payment = new Payment(driver);
+        payment.ScrollDown();
+        payment.SetCheckboxMyBillingAddressIsTheSame(false);
+        payment.ClickReviewOrder();
+        string cardFullNameErrorMessage = payment.GetErrorMessageCardFullName();
+        string cardNumberLine1ErrorMessage = payment.GetErrorMessageForField("Card Number");
+        string expirationDateErrorMessage = payment.GetErrorMessageForField("Expiration Date");
+        string securityCodeErrorMessage = payment.GetErrorMessageForField("Security Code");
+        string billingFullNameErrorMessage = payment.GetErrorMessageBillingFullName();
+        string billingAddressLine1ErrorMessage = payment.GetErrorMessageForField("Address Line 1");
+        string billingAddressLine2ErrorMessage = payment.GetErrorMessageForField("Address Line 2");
+        string billingCityErrorMessage = payment.GetErrorMessageForField("City");
+        string billingStateRegionErrorMessage = payment.GetErrorMessageForField("State/Region");
+        string billingZipCodeErrorMessage = payment.GetErrorMessageForField("Zip Code");
+        string billingCountryErrorMessage = payment.GetErrorMessageForField("Country");
+        StringAssert.Contains("Value looks invalid.", cardFullNameErrorMessage);
+        StringAssert.Contains("Value looks invalid.", cardNumberLine1ErrorMessage);
+        StringAssert.Contains("Value looks invalid.", expirationDateErrorMessage);
+        StringAssert.Contains("Value looks invalid.", securityCodeErrorMessage);
+        StringAssert.Contains("Please provide your full name.", billingFullNameErrorMessage);
+        StringAssert.Contains("Please provide your address.", billingAddressLine1ErrorMessage);
+        StringAssert.Contains("", billingAddressLine2ErrorMessage);
+        StringAssert.Contains("Please provide your city.", billingCityErrorMessage);
+        StringAssert.Contains("", billingStateRegionErrorMessage);
+        StringAssert.Contains("Please provide your zip code.", billingZipCodeErrorMessage);
+        StringAssert.Contains("Please provide your country.", billingCountryErrorMessage);
+        //Adding mandatory payment information
+        payment.InputCardOwnerFullName(fullName);
+        string cardNumber = "1234 4321 7896 256";
+        payment.InputCardNumber(cardNumber);
+        DateOnly expirationDate = new DateOnly(2029, 02, 09);
+        payment.InputExpirationDate(expirationDate);
+        string securityCode = "556";
+        payment.InputSecurityCode(securityCode);        
+        string billingFullName = $"Billing Full Name {Common.GenerateRandom()}";
+        string billingAddressLine1 = $"Billing adl1 {Common.GenerateRandom()}";        
+        string billingCity = $"Billing ci {Common.GenerateRandom()}";        
+        string billingZipCode = $"Billing zp {Common.GenerateRandom()}";
+        string billingCountry = $"Billing co {Common.GenerateRandom()}";
+        payment.InputBillingFullName(billingFullName);
+        payment.InputBillingAddressLine1(billingAddressLine1);        
+        payment.InputBillingCity(billingCity);        
+        payment.InputBillingZipCode(billingZipCode);
+        payment.InputBillingCountry(billingCountry);
+        //need to click it twice: clicking first time accepts entered credit card number, second time moves to the next step
+        payment.ClickReviewOrder();
+        payment.ClickReviewOrder();        
+        //Review Order: Delivery info
+        ReviewOrder reviewOrder = new ReviewOrder(driver);
+        Dictionary<string, string> reviewDeliveryAddress = reviewOrder.GetDeliveryAddressInfo();
+        Assert.AreEqual(fullName, reviewDeliveryAddress["Full Name"]);
+        Assert.AreEqual($"{addressLine1}", reviewDeliveryAddress["Address Lines"]);
+        Assert.AreEqual($"{city}", reviewDeliveryAddress["City, State"]);
+        Assert.AreEqual(country, reviewDeliveryAddress["Country"]);
+        Assert.AreEqual(zipCode, reviewDeliveryAddress["Zip Code"]);
+        //Payment info
+        Dictionary<string, string> reviewPaymentMethod = reviewOrder.GetPaymentMethodInfo();
+        Assert.AreEqual(fullName, reviewPaymentMethod["Full Name"]);
+        Assert.AreEqual(cardNumber, reviewPaymentMethod["Card Number"]);
+        Assert.AreEqual(expirationDate.ToString("MM/yy"), reviewPaymentMethod["Expiration Date"]);
+        //Billing address
+        Dictionary<string, string> reviewBillingAddress = reviewOrder.GetBilingAddressInfo();
+        Assert.AreEqual(billingFullName, reviewBillingAddress["Full Name"]);
+        Assert.AreEqual($"{billingAddressLine1}", reviewBillingAddress["Address Lines"]);
+        Assert.AreEqual($"{billingCity}", reviewBillingAddress["City, State"]);
+        Assert.AreEqual(billingCountry, reviewBillingAddress["Country"]);
+        Assert.AreEqual(billingZipCode, reviewBillingAddress["Zip Code"]);
+                
+        reviewOrder.ClickPlaceOrder();
+        reviewOrder.ClickContinueShopping();
+        string pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains(pageHeader, "Products");
+    }
 }
