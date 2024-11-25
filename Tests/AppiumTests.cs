@@ -220,7 +220,7 @@ public class AppiumTests : TestBase
         checkout.ClickToPayment();
         //Adding payment information
         Payment payment = new Payment(driver);
-        payment.InputFullName(fullName);
+        payment.InputCardOwnerFullName(fullName);
         string cardNumber = "1234 4321 7896 256";
         payment.InputCardNumber(cardNumber);
         DateOnly expirationDate = new DateOnly(2029, 02, 09);
@@ -259,6 +259,119 @@ public class AppiumTests : TestBase
         Assert.AreEqual(productAmount, totalAmount);
         double totalPrice = reviewOrder.GetTotalPrice();
         Assert.AreEqual(shopElement.Price * productAmount + reviewShippingCosts, totalPrice);
+        reviewOrder.ClickPlaceOrder();
+        reviewOrder.ClickContinueShopping();
+        string pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains(pageHeader, "Products");
+    }
+
+    [TestMethod]
+    public void BuyProduct_WithoutLogin_Pass()
+    {
+        //Add few products to basket
+        MainPage mainPage = new MainPage(driver);
+        mainPage.SortByPriceAscending();
+        mainPage.OpenProduct(shopElements[3].Name);
+        ProductPage productPage = new ProductPage(driver);
+        string productColor1 = "gray";
+        int productAmount1 = 2;
+        productPage.AddProductToBasket(productColor1, productAmount1);
+        LeftPanel leftPanel = new LeftPanel(driver);
+        leftPanel.OpenCatalog();
+        mainPage.OpenProduct(shopElements[4].Name);
+        string productColor2 = "black";
+        int productAmount2 = 5;
+        productPage.AddProductToBasket(amount: productAmount2);
+        productPage.OpenBasket();
+        //proceed to checkout
+        Basket basket = new Basket(driver);
+        basket.ClickProceedToCheckout();
+        //login into app        
+        Login login = new Login(driver);
+        login.LoginUser("bob@example.com", "10203040"); //later will make runsettings
+        //Adding address info
+        Checkout checkout = new Checkout(driver);
+        string fullName = $"Full Name {Common.GenerateRandom()}";
+        string addressLine1 = $"adl1 {Common.GenerateRandom()}";
+        string addressLine2 = $"adl2 {Common.GenerateRandom()}";
+        string city = $"ci {Common.GenerateRandom()}";
+        string stateRegion = $"str {Common.GenerateRandom()}";
+        string zipCode = $"zp {Common.GenerateRandom()}";
+        string country = $"co {Common.GenerateRandom()}";
+        checkout.InputFullName(fullName);
+        checkout.InputAddressLine1(addressLine1);
+        checkout.InputAddressLine2(addressLine2);
+        checkout.InputCity(city);
+        checkout.InputStateRegion(stateRegion);
+        checkout.InputZipCode(zipCode);
+        checkout.InputCountry(country);
+        checkout.ClickToPayment();
+        //Adding payment information
+        Payment payment = new Payment(driver);
+        payment.InputCardOwnerFullName(fullName);
+        string cardNumber = "1234 4321 7896 256";
+        payment.InputCardNumber(cardNumber);
+        DateOnly expirationDate = new DateOnly(2029, 02, 09);
+        payment.InputExpirationDate(expirationDate);
+        string securityCode = "556";
+        payment.InputSecurityCode(securityCode);
+        //Adding billing address
+        payment.ScrollDown();
+        payment.SetCheckboxMyBillingAddressIsTheSame(false);
+        string billingFullName = $"Billing Full Name {Common.GenerateRandom()}";
+        string billingAddressLine1 = $"Billing adl1 {Common.GenerateRandom()}";
+        string billingAddressLine2 = $"Billing adl2 {Common.GenerateRandom()}";
+        string billingCity = $"Billing ci {Common.GenerateRandom()}";
+        string billingStateRegion = $"Billing str {Common.GenerateRandom()}";
+        string billingZipCode = $"Billing zp {Common.GenerateRandom()}";
+        string billingCountry = $"Billing co {Common.GenerateRandom()}";
+        payment.InputBillingFullName(billingFullName);
+        payment.InputBillingAddressLine1(billingAddressLine1);
+        payment.InputBillingAddressLine2(billingAddressLine2);
+        payment.InputBillingCity(billingCity);
+        payment.InputBillingStateRegion(billingStateRegion);
+        payment.InputBillingZipCode(billingZipCode);
+        payment.InputBillingCountry(billingCountry);
+        payment.ClickReviewOrder();
+        //Review Order: products info
+        ReviewOrder reviewOrder = new ReviewOrder(driver);
+        List<ShopElementInBasket> reviewProducts = reviewOrder.GetProductsValues();
+        Assert.AreEqual(2, reviewProducts.Count);
+        Assert.AreEqual(shopElements[3].Name, reviewProducts[0].Name);
+        Assert.AreEqual(shopElements[3].Price, reviewProducts[0].Price);
+        Assert.AreEqual(productColor1, reviewProducts[0].Color);
+        Assert.AreEqual(shopElements[4].Name, reviewProducts[1].Name);
+        Assert.AreEqual(shopElements[4].Price, reviewProducts[1].Price);
+        Assert.AreEqual(productColor2, reviewProducts[1].Color);
+        //Delivery info
+        Dictionary<string, string> reviewDeliveryAddress = reviewOrder.GetDeliveryAddressInfo();
+        Assert.AreEqual(fullName, reviewDeliveryAddress["Full Name"]);
+        Assert.AreEqual($"{addressLine1}, {addressLine2}", reviewDeliveryAddress["Address Lines"]);
+        Assert.AreEqual($"{city}, {stateRegion}", reviewDeliveryAddress["City, State"]);
+        Assert.AreEqual(country, reviewDeliveryAddress["Country"]);
+        Assert.AreEqual(zipCode, reviewDeliveryAddress["Zip Code"]);
+        //Payment info
+        Dictionary<string, string> reviewPaymentMethod = reviewOrder.GetPaymentMethodInfo();
+        Assert.AreEqual(fullName, reviewPaymentMethod["Full Name"]);
+        Assert.AreEqual(cardNumber, reviewPaymentMethod["Card Number"]);
+        Assert.AreEqual(expirationDate.ToString("MM/yy"), reviewPaymentMethod["Expiration Date"]);
+        //Billing address
+        Dictionary<string, string> reviewBillingAddress = reviewOrder.GetBilingAddressInfo();
+        Assert.AreEqual(billingFullName, reviewBillingAddress["Full Name"]);
+        Assert.AreEqual($"{billingAddressLine1}, {billingAddressLine2}", reviewBillingAddress["Address Lines"]);
+        Assert.AreEqual($"{billingCity}, {billingStateRegion}", reviewBillingAddress["City, State"]);
+        Assert.AreEqual(billingCountry, reviewBillingAddress["Country"]);
+        Assert.AreEqual(billingZipCode, reviewBillingAddress["Zip Code"]);
+        //Shipping costs
+        double reviewShippingCosts = reviewOrder.GetShippingCosts();
+        Assert.AreEqual(5.99, reviewShippingCosts);
+        //totals
+        int totalAmount = reviewOrder.GetTotalItems();
+        int expectedTotalAmount = productAmount1 + productAmount2;
+        Assert.AreEqual(expectedTotalAmount, totalAmount);
+        double totalPrice = reviewOrder.GetTotalPrice();
+        double expectedTotalPrice = shopElements[3].Price * productAmount1 + shopElements[4].Price * productAmount2 + reviewShippingCosts;
+        Assert.AreEqual(expectedTotalPrice, totalPrice);
         reviewOrder.ClickPlaceOrder();
         reviewOrder.ClickContinueShopping();
         string pageHeader = mainPage.GetPageHeader();
