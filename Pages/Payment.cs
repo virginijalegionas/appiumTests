@@ -94,17 +94,23 @@ public class Payment : BaseOperations
     {
         string xpath = "//android.view.ViewGroup[@content-desc='Full Name*-error-message'][1]//android.widget.TextView";
         return GetElement(By.XPath(xpath), 5).Text;
-    }  
+    }
 
     public string GetErrorMessageBillingFullName()
     {
         string xpath = "//android.view.ViewGroup[@content-desc='Full Name*-error-message'][2]//android.widget.TextView";
         return GetElement(By.XPath(xpath), 5).Text;
-    } 
+    }
 
     public string GetErrorMessageForField(string fieldName)
     {
-        string xpath = GenerateErrorMessageXpath(fieldName);
-        return GetElement(By.XPath(xpath), 5).Text;
-    }  
+        string errorMessage = "";
+        string xpath = $"//android.view.ViewGroup[starts-with(@content-desc, '{fieldName}') and ends-with(@content-desc, '-error-message')]//android.widget.TextView";
+        if (IsElementExists(By.XPath(xpath), 2))
+        {
+            errorMessage = GetElement(By.XPath(xpath), 5).Text;
+            return errorMessage;
+        }
+        return errorMessage;
+    }
 }

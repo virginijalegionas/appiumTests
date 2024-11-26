@@ -58,7 +58,13 @@ public class Checkout : BaseOperations
 
     public string GetErrorMessageForField(string fieldName)
     {
-        string xpath = GenerateErrorMessageXpath(fieldName);
-        return GetElement(By.XPath(xpath), 5).Text;
+        string errorMessage = "";
+        string xpath = $"//android.view.ViewGroup[starts-with(@content-desc, '{fieldName}') and ends-with(@content-desc, '-error-message')]//android.widget.TextView";
+        if (IsElementExists(By.XPath(xpath), 2))
+        {
+            errorMessage = GetElement(By.XPath(xpath), 5).Text;
+            return errorMessage;
+        }
+        return errorMessage;
     }    
 }

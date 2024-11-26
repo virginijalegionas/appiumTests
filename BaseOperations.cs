@@ -137,14 +137,4 @@ public class BaseOperations
                .Perform();
     }
 
-    public string GenerateErrorMessageXpath(string fieldName)
-    {
-        List<string> mandatoryFields = ["Full Name", "Address Line 1", "City", "Zip Code", "Country", "Card Number", "Expiration Date", "Security Code"];
-
-        if (mandatoryFields.Contains(fieldName))
-        {
-            return $"//android.view.ViewGroup[@content-desc='{fieldName}*-error-message']//android.widget.TextView";
-        }
-        return $"//android.view.ViewGroup[@content-desc='{fieldName}-error-message']";
-    }
 }
