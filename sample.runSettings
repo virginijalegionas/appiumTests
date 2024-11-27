@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <TestRunParameters>    
+    <Parameter name="appPackage" value="" />
+    <Parameter name="appActivity" value="" />
+    <Parameter name="udid" value="" />
+    <Parameter name="userName" value="" />
+    <Parameter name="userPassword" value="" />
+  </TestRunParameters>
+</RunSettings>

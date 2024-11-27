@@ -4,9 +4,25 @@ using OpenQA.Selenium.Appium.Enums;
 
 namespace appiumTests
 {
+    [TestClass]
     public class TestBase
     {
+        public static string appPackage;
+        public static string appActivity;
+        public static string uDid;
+        public static string userName;
+        public static string userPassword;
         public AndroidDriver driver;
+
+        [AssemblyInitialize]
+        public static void Initialize(TestContext testContext)
+        {
+            appPackage = testContext.Properties["appPackage"] as string;
+            appActivity = testContext.Properties["appActivity"] as string;
+            uDid = testContext.Properties["udid"] as string;
+            userName = testContext.Properties["userName"] as string;
+            userPassword = testContext.Properties["userPassword"] as string;
+        }
 
         public void StartDriver()
         {
@@ -15,13 +31,13 @@ namespace appiumTests
             {
                 AutomationName = AutomationName.AndroidUIAutomator2,
                 PlatformName = "Android",
-                DeviceName = "Mi A1",
+                DeviceName = "My Phone",
                 PlatformVersion = "9",
             };
 
-            driverOptions.AddAdditionalAppiumOption("appPackage", "com.saucelabs.mydemoapp.rn");
-            driverOptions.AddAdditionalAppiumOption("appActivity", ".MainActivity");
-            driverOptions.AddAdditionalAppiumOption("udid", "28f136550704");
+            driverOptions.AddAdditionalAppiumOption("appPackage", appPackage);
+            driverOptions.AddAdditionalAppiumOption("appActivity", appActivity);
+            driverOptions.AddAdditionalAppiumOption("udid", uDid);
             driverOptions.AddAdditionalAppiumOption("shouldTerminateApp", true);
             driverOptions.AddAdditionalAppiumOption("allowInvisibleElements", true);
             // NoReset assumes the app com.google.android is preinstalled on the emulator

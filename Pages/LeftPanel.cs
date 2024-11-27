@@ -30,7 +30,7 @@ public class LeftPanel : BaseOperations
         string xpath = "//android.view.ViewGroup[@content-desc=\"menu item log in\"]";
         GetElement(By.XPath(xpath), 5).Click();
     }
-    
+
     public void ClickLogOut()
     {
         string xpath = "//android.view.ViewGroup[@content-desc=\"menu item log out\"]";
