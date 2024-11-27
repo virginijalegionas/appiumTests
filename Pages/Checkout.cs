@@ -54,17 +54,5 @@ public class Checkout : BaseOperations
     {
         string xpath = "//android.widget.EditText[@content-desc=\"Country* input field\"]";
         InputTextField(By.XPath(xpath), country);
-    }
-
-    public string GetErrorMessageForField(string fieldName)
-    {
-        string errorMessage = "";
-        string xpath = $"//android.view.ViewGroup[starts-with(@content-desc, '{fieldName}') and ends-with(@content-desc, '-error-message')]//android.widget.TextView";
-        if (IsElementExists(By.XPath(xpath), 2))
-        {
-            errorMessage = GetElement(By.XPath(xpath), 5).Text;
-            return errorMessage;
-        }
-        return errorMessage;
-    }    
+    } 
 }

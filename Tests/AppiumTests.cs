@@ -390,7 +390,7 @@ public class AppiumTests : TestBase
         MainPage mainPage = new MainPage(driver);
         mainPage.SortByNameAscending();
         mainPage.OpenProduct(shopElement.Name);
-        ProductPage productPage = new ProductPage(driver);        
+        ProductPage productPage = new ProductPage(driver);
         productPage.ClickAddToCart();
         productPage.OpenBasket();
         //proceed to checkout
@@ -398,7 +398,7 @@ public class AppiumTests : TestBase
         basket.ClickProceedToCheckout();
         //Adding address info
         Checkout checkout = new Checkout(driver);
-        checkout.ClickToPayment(); 
+        checkout.ClickToPayment();
         //Validate that mandatory fields contains error messages
         string fullNameErrorMessage = checkout.GetErrorMessageForField("Full Name");
         string addressLine1ErrorMessage = checkout.GetErrorMessageForField("Address Line 1");
@@ -416,16 +416,16 @@ public class AppiumTests : TestBase
         StringAssert.Contains("Please provide your country.", countryErrorMessage);
         //enter mandatory fields to procced
         string fullName = $"Full Name {Common.GenerateRandom()}";
-        string addressLine1 = $"adl1 {Common.GenerateRandom()}";        
-        string city = $"ci {Common.GenerateRandom()}";        
+        string addressLine1 = $"adl1 {Common.GenerateRandom()}";
+        string city = $"ci {Common.GenerateRandom()}";
         string zipCode = $"zp {Common.GenerateRandom()}";
         string country = $"co {Common.GenerateRandom()}";
         checkout.InputFullName(fullName);
-        checkout.InputAddressLine1(addressLine1);        
-        checkout.InputCity(city);        
+        checkout.InputAddressLine1(addressLine1);
+        checkout.InputCity(city);
         checkout.InputZipCode(zipCode);
         checkout.InputCountry(country);
-        checkout.ClickToPayment();         
+        checkout.ClickToPayment();
         //validate when payment info isn't entered
         Payment payment = new Payment(driver);
         payment.ScrollDown();
@@ -460,20 +460,20 @@ public class AppiumTests : TestBase
         DateOnly expirationDate = new DateOnly(2029, 02, 09);
         payment.InputExpirationDate(expirationDate);
         string securityCode = "556";
-        payment.InputSecurityCode(securityCode);        
+        payment.InputSecurityCode(securityCode);
         string billingFullName = $"Billing Full Name {Common.GenerateRandom()}";
-        string billingAddressLine1 = $"Billing adl1 {Common.GenerateRandom()}";        
-        string billingCity = $"Billing ci {Common.GenerateRandom()}";        
+        string billingAddressLine1 = $"Billing adl1 {Common.GenerateRandom()}";
+        string billingCity = $"Billing ci {Common.GenerateRandom()}";
         string billingZipCode = $"Billing zp {Common.GenerateRandom()}";
         string billingCountry = $"Billing co {Common.GenerateRandom()}";
         payment.InputBillingFullName(billingFullName);
-        payment.InputBillingAddressLine1(billingAddressLine1);        
-        payment.InputBillingCity(billingCity);        
+        payment.InputBillingAddressLine1(billingAddressLine1);
+        payment.InputBillingCity(billingCity);
         payment.InputBillingZipCode(billingZipCode);
         payment.InputBillingCountry(billingCountry);
         //need to click it twice: clicking first time accepts entered credit card number, second time moves to the next step
         payment.ClickReviewOrder();
-        payment.ClickReviewOrder();        
+        payment.ClickReviewOrder();
         //Review Order: Delivery info
         ReviewOrder reviewOrder = new ReviewOrder(driver);
         Dictionary<string, string> reviewDeliveryAddress = reviewOrder.GetDeliveryAddressInfo();
@@ -494,10 +494,78 @@ public class AppiumTests : TestBase
         Assert.AreEqual($"{billingCity}", reviewBillingAddress["City, State"]);
         Assert.AreEqual(billingCountry, reviewBillingAddress["Country"]);
         Assert.AreEqual(billingZipCode, reviewBillingAddress["Zip Code"]);
-                
+
         reviewOrder.ClickPlaceOrder();
         reviewOrder.ClickContinueShopping();
         string pageHeader = mainPage.GetPageHeader();
         StringAssert.Contains(pageHeader, "Products");
+    }
+
+    [TestMethod]
+    public void LoginLogout_MISC()
+    {
+        //Login no credentials
+        LeftPanel leftPanel = new LeftPanel(driver);
+        leftPanel.OpenLogin();
+        Login login = new Login(driver);
+        login.ClickLogin();
+        string usernameErrorMessage = login.GetErrorMessageForField("Username");
+        string passwordErrorMessage = login.GetErrorMessageForField("Password");
+        StringAssert.Contains("Username is required", usernameErrorMessage);
+        StringAssert.Contains("", passwordErrorMessage);
+        login.InputUserName("bob@example.com");
+        login.ClickLogin();
+        usernameErrorMessage = login.GetErrorMessageForField("Username");
+        passwordErrorMessage = login.GetErrorMessageForField("Password");
+        StringAssert.Contains("", usernameErrorMessage);
+        StringAssert.Contains("Password is required", passwordErrorMessage);
+        login.InputPassword("10203040");
+        //empty basket; Login -> Catalog; Login->empty basket        
+        login.ClickLogin();
+        MainPage mainPage = new MainPage(driver);
+        string pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains("Products", pageHeader);
+        leftPanel.OpenLogin();
+        Basket basket = new Basket(driver);
+        Assert.IsTrue(basket.IsBasketEmpty(), $"expected user is navigated to empty basket");
+        //Logout->Login; Login->basket checkout
+        leftPanel.OpenLogout();
+        Logout logout = new Logout(driver);
+        logout.LogoutUser();
+        pageHeader = login.GetPageHeader();
+        StringAssert.Contains("Login", pageHeader);
+        login.LoginUser("bob@example.com", "10203040");
+        pageHeader = basket.GetPageHeader();
+        StringAssert.Contains("Checkout", pageHeader);
+        //logout->login; Catalog->Login->catalog
+        leftPanel.OpenLogout();
+        logout.LogoutUser();
+        leftPanel.OpenLogin();
+        login.LoginUser("bob@example.com", "10203040");
+        pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains("Products", pageHeader);
+        //item in basket; Login -> Catalog; Login->basket checkout
+        mainPage.SortByNameAscending();
+        mainPage.OpenProduct(shopElement.Name);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.ClickAddToCart();
+        leftPanel.OpenLogout();
+        logout.LogoutUser();
+        leftPanel.OpenLogin();
+        login.LoginUser("bob@example.com", "10203040");
+        pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains("Products", pageHeader);
+        leftPanel.OpenLogin();
+        pageHeader = mainPage.GetPageHeader();
+        StringAssert.Contains("Checkout", pageHeader);
+        //Logout->Login; Logout->login
+        leftPanel.OpenLogout();
+        logout.LogoutUser();
+        pageHeader = login.GetPageHeader();
+        StringAssert.Contains("Login", pageHeader);
+        leftPanel.OpenLogout();
+        logout.LogoutUser();
+        pageHeader = login.GetPageHeader();
+        StringAssert.Contains("Login", pageHeader);
     }
 }
