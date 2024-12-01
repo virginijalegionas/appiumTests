@@ -9,7 +9,7 @@ namespace appiumTests
     {
         public static string appPackage;
         public static string appActivity;
-        public static string uDid;
+        public static string udid;
         public static string userName;
         public static string userPassword;
         public AndroidDriver driver;
@@ -19,7 +19,7 @@ namespace appiumTests
         {
             appPackage = testContext.Properties["appPackage"] as string;
             appActivity = testContext.Properties["appActivity"] as string;
-            uDid = testContext.Properties["udid"] as string;
+            udid = testContext.Properties["udid"] as string;
             userName = testContext.Properties["userName"] as string;
             userPassword = testContext.Properties["userPassword"] as string;
         }
@@ -37,7 +37,7 @@ namespace appiumTests
 
             driverOptions.AddAdditionalAppiumOption("appPackage", appPackage);
             driverOptions.AddAdditionalAppiumOption("appActivity", appActivity);
-            driverOptions.AddAdditionalAppiumOption("udid", uDid);
+            driverOptions.AddAdditionalAppiumOption("udid", udid);
             driverOptions.AddAdditionalAppiumOption("shouldTerminateApp", true);
             driverOptions.AddAdditionalAppiumOption("allowInvisibleElements", true);
             // NoReset assumes the app com.google.android is preinstalled on the emulator
