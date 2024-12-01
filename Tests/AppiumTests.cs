@@ -1,5 +1,3 @@
-using System.Net.Mail;
-
 namespace appiumTests;
 
 [TestClass]
@@ -188,7 +186,7 @@ public class AppiumTests : TestBase
         LeftPanel leftPanel = new LeftPanel(driver);
         leftPanel.OpenLogin();
         Login login = new Login(driver);
-        login.LoginUser("bob@example.com", "10203040"); //later will make runsettings
+        login.LoginUser(userName, userPassword);
         //Add product to basket
         MainPage mainPage = new MainPage(driver);
         mainPage.SortByNameAscending();
@@ -288,7 +286,7 @@ public class AppiumTests : TestBase
         basket.ClickProceedToCheckout();
         //login into app        
         Login login = new Login(driver);
-        login.LoginUser("bob@example.com", "10203040"); //later will make runsettings
+        login.LoginUser(userName, userPassword);
         //Adding address info
         Checkout checkout = new Checkout(driver);
         string fullName = $"Full Name {Common.GenerateRandom()}";
@@ -385,7 +383,7 @@ public class AppiumTests : TestBase
         LeftPanel leftPanel = new LeftPanel(driver);
         leftPanel.OpenLogin();
         Login login = new Login(driver);
-        login.LoginUser("bob@example.com", "10203040"); //later will make runsettings
+        login.LoginUser(userName, userPassword);
         //Add product to basket
         MainPage mainPage = new MainPage(driver);
         mainPage.SortByNameAscending();
@@ -513,13 +511,13 @@ public class AppiumTests : TestBase
         string passwordErrorMessage = login.GetErrorMessageForField("Password");
         StringAssert.Contains("Username is required", usernameErrorMessage);
         StringAssert.Contains("", passwordErrorMessage);
-        login.InputUserName("bob@example.com");
+        login.InputUserName(userName);
         login.ClickLogin();
         usernameErrorMessage = login.GetErrorMessageForField("Username");
         passwordErrorMessage = login.GetErrorMessageForField("Password");
         StringAssert.Contains("", usernameErrorMessage);
         StringAssert.Contains("Password is required", passwordErrorMessage);
-        login.InputPassword("10203040");
+        login.InputPassword(userPassword);
         //empty basket; Login -> Catalog; Login->empty basket        
         login.ClickLogin();
         MainPage mainPage = new MainPage(driver);
@@ -534,14 +532,14 @@ public class AppiumTests : TestBase
         logout.LogoutUser();
         pageHeader = login.GetPageHeader();
         StringAssert.Contains("Login", pageHeader);
-        login.LoginUser("bob@example.com", "10203040");
+        login.LoginUser(userName, userPassword);
         pageHeader = basket.GetPageHeader();
         StringAssert.Contains("Checkout", pageHeader);
         //logout->login; Catalog->Login->catalog
         leftPanel.OpenLogout();
         logout.LogoutUser();
         leftPanel.OpenLogin();
-        login.LoginUser("bob@example.com", "10203040");
+        login.LoginUser(userName, userPassword);
         pageHeader = mainPage.GetPageHeader();
         StringAssert.Contains("Products", pageHeader);
         //item in basket; Login -> Catalog; Login->basket checkout
@@ -552,7 +550,7 @@ public class AppiumTests : TestBase
         leftPanel.OpenLogout();
         logout.LogoutUser();
         leftPanel.OpenLogin();
-        login.LoginUser("bob@example.com", "10203040");
+        login.LoginUser(userName, userPassword);
         pageHeader = mainPage.GetPageHeader();
         StringAssert.Contains("Products", pageHeader);
         leftPanel.OpenLogin();

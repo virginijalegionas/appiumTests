@@ -100,5 +100,5 @@ public class Payment : BaseOperations
     {
         string xpath = "//android.view.ViewGroup[@content-desc='Full Name*-error-message'][2]//android.widget.TextView";
         return GetElement(By.XPath(xpath), 5).Text;
-    }    
+    }
 }

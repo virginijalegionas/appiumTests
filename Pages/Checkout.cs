@@ -54,5 +54,5 @@ public class Checkout : BaseOperations
     {
         string xpath = "//android.widget.EditText[@content-desc=\"Country* input field\"]";
         InputTextField(By.XPath(xpath), country);
-    } 
+    }
 }

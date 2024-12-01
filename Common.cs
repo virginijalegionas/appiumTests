@@ -7,7 +7,7 @@ public class Common
         return new string(Enumerable.Repeat(chars, 6)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
-    
+
     public static void Wait(int waitSeconds)
     {
         Thread.Sleep(waitSeconds * 1000);
