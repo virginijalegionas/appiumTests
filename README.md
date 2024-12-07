@@ -17,6 +17,7 @@ like it's shown in the picture: green is appPackage, yellow is appActivity
 - udid - the id of your phone connected to pc **Tip:** connect phone to pc, then run this comand in cmd: `adb devices`
 - userName - demo eshop username, taken from the app
 - userPassword - demo eshop user password, taken from the app
+  **Tip:** use this command to run tests in terminal, if you want to see more detailed test results: dotnet test -l "console;verbosity=detailed" --settings:.runSettings
 
 **Automated tests validate these situations:**
 - Product sorting
