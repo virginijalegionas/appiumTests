@@ -1,5 +1,5 @@
 ## appiumTests
-The aim of this project: learn to write UI automated tests on android. 
+The aim of this project: learn to write UI automated tests for android applications. 
 
 **Project Info:**
 - automation tests created for this demo eshop app: https://github.com/saucelabs/my-demo-app-rn
