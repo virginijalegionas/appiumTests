@@ -4,6 +4,7 @@ The aim of this project: learn to write UI automated tests for android applicati
 **Project Info:**
 - automation tests created for this demo eshop app: https://github.com/saucelabs/my-demo-app-rn
 - appium was used for automation
+- coded with C#
 - xpaths can be handled here: https://inspector.appiumpro.com/. **Tip:** need to start appium server with parameters --allow-cors e.g.(`appium --allow-cors`)
 
 **Run Settings need these properties to be specified:**
